@@ -114,12 +114,16 @@ void handleSerialData(byte data) {
     buffer[buffer_index] = data;
     buffer_index = (buffer_index + 1) % SYNC_BUFFER_SIZE;
     if (buffer_index == 0) {
-        usbMIDI.sendProgramChange(buffer[0], 1); // Channel 1
-        usbMIDI.sendProgramChange(buffer[1], 2); // Channel 2
-        usbMIDI.sendProgramChange(buffer[2], 3); // Channel 3
-        usbMIDI.sendProgramChange(buffer[3], 4); // Channel 4
-        usbMIDI.sendProgramChange(buffer[4], 5); // Channel 5
-        usbMIDI.sendProgramChange(buffer[5], 6); // Channel 6
+        usbMIDI.sendProgramChange(rootNote(), 1);            // Channel 1
+        usbMIDI.sendProgramChange(degree_nr(), 2);           // Channel 2
+        usbMIDI.sendProgramChange(mode_nr(), 3);             // Channel 3
+        usbMIDI.sendProgramChange(transposition(), 4);       // Channel 4
+        usbMIDI.sendProgramChange(get_clock(), 5);           // Channel 5
+        usbMIDI.sendProgramChange(beat(), 6);                // Channel 6
+        usbMIDI.sendProgramChange(step(), 7);                // Channel 7
+        usbMIDI.sendProgramChange(reset(), 8);               // Channel 8
+        usbMIDI.sendProgramChange((uint8_t)(chaotic_detune() * 127), 9); // Channel 9
+        usbMIDI.sendProgramChange(harmonic_shift(), 10);     // Channel 10
         dump();
     }
 }
