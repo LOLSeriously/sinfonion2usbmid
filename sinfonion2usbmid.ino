@@ -1,4 +1,4 @@
-// send data from sinfoinion out1 as master
+// send data from sinfoinion out1 as master to Teensy RX pin, send to usbMIDI to be processed by Droid
 #include <stdint.h>
 #include <stdbool.h>
 #include <Arduino.h>
