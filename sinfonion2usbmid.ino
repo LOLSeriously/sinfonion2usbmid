@@ -7,7 +7,7 @@
 
 #define SYNC_BUFFER_SIZE 12
 #define LED_PIN 13
-#define RX_PIN 7
+#define RX_PIN 7  //Teensy 4.1 RX2
 #define BAUD_RATE 115200
 
 uint8_t buffer[SYNC_BUFFER_SIZE] = {0};
