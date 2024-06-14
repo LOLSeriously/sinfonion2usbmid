@@ -1,4 +1,4 @@
-// send data from sinfoinion out1 master, yellow wire is rx
+// send data from sinfoinion out1 as master
 #include <stdint.h>
 #include <stdbool.h>
 #include <Arduino.h>
