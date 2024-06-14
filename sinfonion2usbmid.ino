@@ -1,5 +1,3 @@
-// send data from sinfoinion out1 as master to Teensy RX pin, send to usbMIDI to be processed by Droid
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <Arduino.h>
@@ -9,10 +7,11 @@
 
 #define SYNC_BUFFER_SIZE 12
 #define LED_PIN 13
+#define RX_PIN 7
+#define BAUD_RATE 115200
 
 uint8_t buffer[SYNC_BUFFER_SIZE] = {0};
 uint8_t previous_buffer[SYNC_BUFFER_SIZE] = {0};
-unsigned long last_interrupt = 0;
 uint8_t buffer_index = 0;
 
 bool buffers_differ(uint8_t* buf1, uint8_t* buf2, size_t length) {
@@ -25,47 +24,26 @@ bool buffers_differ(uint8_t* buf1, uint8_t* buf2, size_t length) {
 }
 
 void handleSerialData(byte data) {
-    // Assuming the data follows the same format as the original program
     buffer[buffer_index] = data;
     buffer_index = (buffer_index + 1) % SYNC_BUFFER_SIZE;
     if (buffer_index == 0) {
-        // All buffer data received, process the buffer
         if (buffers_differ(buffer, previous_buffer, SYNC_BUFFER_SIZE)) {
-            // Send USB MIDI only if the buffer data has changed
-            usbMIDI.sendProgramChange(buffer[0], 1); // Channel 1
-            usbMIDI.sendProgramChange(buffer[1], 2); // Channel 2
-            usbMIDI.sendProgramChange(buffer[2], 3); // Channel 3
-            usbMIDI.sendProgramChange(buffer[3], 4); // Channel 4
-            usbMIDI.sendProgramChange(buffer[4], 5); // Channel 5
-            usbMIDI.sendProgramChange(buffer[5], 6); // Channel 6
-            usbMIDI.sendProgramChange(buffer[6], 7); // Channel 7
-            usbMIDI.sendProgramChange(buffer[7], 8); // Channel 8                        
-            usbMIDI.sendProgramChange(buffer[8], 9); // Channel 9
-            usbMIDI.sendProgramChange(buffer[9], 10); // Channel 10
-
-            // Update previous buffer
-            for (int i = 0; i < SYNC_BUFFER_SIZE; i++) {
-                previous_buffer[i] = buffer[i];
+            for (int i = 0; i < 10; i++) {
+                usbMIDI.sendProgramChange(buffer[i], i + 1); // Channels 1 to 10
             }
+            memcpy(previous_buffer, buffer, SYNC_BUFFER_SIZE);
         }
-
-        // Clear buffer for next data
-        for (int i = 0; i < SYNC_BUFFER_SIZE; i++) {
-            buffer[i] = 0;
-        }
+        memset(buffer, 0, SYNC_BUFFER_SIZE);
     }
 }
 
 void setup() {
     pinMode(LED_PIN, OUTPUT);
-    pinMode(7, INPUT_PULLUP); // Pin 7 is RX2
+    pinMode(RX_PIN, INPUT_PULLUP);
+    Serial2.begin(BAUD_RATE, SERIAL_8N1_RXINV_TXINV);
 
-    Serial2.begin(115200, SERIAL_8N1_RXINV_TXINV);
-    // Initialize buffer
-    for (int i = 0; i < SYNC_BUFFER_SIZE; i++) {
-        buffer[i] = 0;
-        previous_buffer[i] = 0;
-    }
+    memset(buffer, 0, SYNC_BUFFER_SIZE);
+    memset(previous_buffer, 0, SYNC_BUFFER_SIZE);
 }
 
 void loop() {
