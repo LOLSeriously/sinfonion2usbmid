@@ -121,7 +121,7 @@ void dump() {
 }
 
 void handleSerialData(byte data) {
-    // Assuming the data follows the same format as the original program
+    // Assuming the data follows the same format as norns2sinfonion
     buffer[buffer_index] = data;
     buffer_index = (buffer_index + 1) % SYNC_BUFFER_SIZE;
     if (buffer_index == 0) {
